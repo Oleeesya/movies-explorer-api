@@ -16,8 +16,6 @@ const options = {
     'http://localhost:3000',
     'http://localhost:3010',
     'http://api.domain.movies.nomoredomains.icu',
-    'https://api.domain.movies.nomoredomains.icu',
-    // 'https://YOUR.github.io',
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   preflightContinue: false,
