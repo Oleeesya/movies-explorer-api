@@ -52,6 +52,10 @@ const movieSchema = new mongoose.Schema({
     match: enRegex,
     required: true,
   },
+  movieId: {
+    type: mongoose.Schema.Types.Number,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model('movie', movieSchema);

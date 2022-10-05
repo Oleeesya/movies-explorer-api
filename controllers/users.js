@@ -5,15 +5,10 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
-const {
-  CONFLICT,
-} = require('../utils/errors/conflict');
-const {
-  UNAUTHORIZED,
-} = require('../utils/errors/unauthorized');
-const {
-  BAD_REQUEST,
-} = require('../utils/errors/bad_request');
+const { CONFLICT } = require('../utils/errors/conflict');
+const { BAD_REQUEST } = require('../utils/errors/bad_request');
+
+const { messageConflict, messageBadRequest } = require('../utils/const');
 
 // возвращает информацию о пользователе (email и имя)
 module.exports.getUser = (req, res, next) => {
@@ -39,8 +34,10 @@ module.exports.updateProfile = (req, res, next) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BAD_REQUEST('Некорректные данные при обновлении данных пользователя'));
+      if (err.code === 11000) {
+        next(new CONFLICT(messageConflict));
+      } else if (err.name === 'ValidationError') {
+        next(new BAD_REQUEST(messageBadRequest));
       } else {
         next(err);
       }
@@ -66,9 +63,9 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        next(new CONFLICT('Пользователь с таким email уже существует'));
+        next(new CONFLICT(messageConflict));
       } else if (err.name === 'ValidationError') {
-        next(new BAD_REQUEST('Некорректные данные при создании пользователя'));
+        next(new BAD_REQUEST(messageBadRequest));
       } else {
         next(err);
       }
@@ -94,8 +91,5 @@ module.exports.login = (req, res, next) => {
       // вернём токен
       res.send({ token });
     })
-    .catch((err) => {
-      // ошибка аутентификации
-      next(new UNAUTHORIZED(err.message));
-    });
+    .catch(next);
 };

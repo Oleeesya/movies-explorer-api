@@ -11,8 +11,7 @@ const userSchema = new mongoose.Schema({
       },
       message: 'Длина строки должна быть не менее 2 и не более 30 символов',
     },
-    default: 'Жак-Ив Кусто',
-    required: false,
+    required: true,
   },
   email: {
     type: String,

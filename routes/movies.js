@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
 
 const {
   getMovies,
@@ -7,29 +6,14 @@ const {
   removeMovie,
 } = require('../controllers/movies');
 
+const { validCreateMovie, validRemoveMovie } = require('../utils/validation');
+
 // возвращает все фильмы
 router.get('/', getMovies);
 
 // создаёт фильм
-router.post('/', celebrate({
-  body: Joi.object().keys({
-    country: Joi.string(),
-    director: Joi.string(),
-    duration: Joi.number(),
-    year: Joi.string(),
-    description: Joi.string(),
-    image: Joi.string(),
-    trailerLink: Joi.string(),
-    nameRU: Joi.string(),
-    nameEN: Joi.string(),
-    thumbnail: Joi.string(),
-  }),
-}), createMovie);
+router.post('/', validCreateMovie, createMovie);
 
-router.delete('/:movieId', celebrate({
-  params: Joi.object().keys({
-    movieId: Joi.string().alphanum().length(24),
-  }),
-}), removeMovie);
+router.delete('/:movieId', validRemoveMovie, removeMovie);
 
 module.exports = router;

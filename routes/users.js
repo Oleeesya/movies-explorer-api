@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
 const auth = require('../middlewares/auth');
 
 const {
@@ -7,15 +6,12 @@ const {
   updateProfile,
 } = require('../controllers/users');
 
-// возвращает всех пользователей
+const { validUpdateProfile } = require('../utils/validation');
+
+// возвращает информацию о пользователе
 router.get('/me', auth, getUser);
 
 // обновляет профиль
-router.patch('/me', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    name: Joi.string().min(2).max(30).required(),
-  }),
-}), updateProfile);
+router.patch('/me', validUpdateProfile, updateProfile);
 
 module.exports = router;

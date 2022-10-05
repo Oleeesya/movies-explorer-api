@@ -1,15 +1,19 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const process = require('process');
 const { errors } = require('celebrate');
 const cors = require('cors');
+const { messageNotFound } = require('./utils/const');
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const {
-  NOT_FOUND,
-} = require('./utils/errors/not_found');
-require('dotenv').config();
+const { NOT_FOUND } = require('./utils/errors/not_found');
+const centralized = require('./utils/errors/centralized');
+const { devDataBaseUrl, limiter } = require('./utils/config');
+
+const { NODE_ENV, DATABASE_URL } = process.env;
 
 const options = {
   origin: [
@@ -25,7 +29,12 @@ const options = {
 };
 
 const { PORT = 3000 } = process.env;
+
 const app = express();
+
+app.use(limiter);
+
+app.use(helmet());
 
 app.use('*', cors(options));
 
@@ -33,15 +42,12 @@ app.use(bodyParser.json());
 
 app.use(requestLogger); // подключаем логгер запросов
 
-app.use('/users', auth, require('./routes/users'));
-
-app.use('/movies', auth, require('./routes/movies'));
-
 app.use('/', require('./routes/index'));
 
-app.use(auth, (req, res, next) => next(new NOT_FOUND('Передан неправильный путь')));
+app.use(auth, (req, res, next) => next(new NOT_FOUND(messageNotFound)));
+
 // подключаемся к серверу mongo
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
+mongoose.connect(String(NODE_ENV === 'production' ? DATABASE_URL : devDataBaseUrl), {
   useNewUrlParser: true,
   // не поддерживаются:
   // useCreateIndex: true,
@@ -52,12 +58,7 @@ app.use(errorLogger); // подключаем логгер ошибок
 
 app.use(errors()); // обработчик ошибок celebrate
 
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const message = statusCode === 500 ? 'На сервере произошла ошибка' : err.message;
-  res.status(statusCode).send({ message });
-  next();
-});
+app.use(centralized);
 
 app.listen(PORT, () => {
   console.log(`Port ${PORT}`);
