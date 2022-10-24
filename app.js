@@ -34,11 +34,11 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
+app.use('*', cors(options));
+
 app.use(limiter);
 
 app.use(helmet());
-
-app.use('*', cors(options));
 
 app.use(bodyParser.json());
 
