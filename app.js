@@ -19,6 +19,8 @@ const options = {
   origin: [
     'http://localhost:3000',
     'http://localhost:3010',
+    'http://films.nomoredomains.icu',
+    'https://films.nomoredomains.icu',
     'http://api.domain.movies.nomoredomains.icu',
     'https://api.domain.movies.nomoredomains.icu',
 
