@@ -19,7 +19,11 @@ const options = {
   origin: [
     'http://localhost:3000',
     'http://localhost:3010',
+    'http://films.nomoredomains.icu',
+    'https://films.nomoredomains.icu',
     'http://api.domain.movies.nomoredomains.icu',
+    'https://api.domain.movies.nomoredomains.icu',
+
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   preflightContinue: false,
@@ -32,11 +36,11 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
+app.use('*', cors(options));
+
 app.use(limiter);
 
 app.use(helmet());
-
-app.use('*', cors(options));
 
 app.use(bodyParser.json());
 
