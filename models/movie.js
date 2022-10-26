@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { linkRegex, ruRegex, enRegex } = require('../utils/const');
+const { linkRegex } = require('../utils/const');
 
 const movieSchema = new mongoose.Schema({
   country: {
@@ -44,12 +44,10 @@ const movieSchema = new mongoose.Schema({
   },
   nameRU: {
     type: String,
-    match: ruRegex,
     required: true,
   },
   nameEN: {
     type: String,
-    match: enRegex,
     required: true,
   },
   movieId: {
